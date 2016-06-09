@@ -1,3 +1,3 @@
-define({
-  "greeting" : "Ciao Mamma!"
-});
+module.exports = {
+  "greeting": "Ciao Mamma!"
+};

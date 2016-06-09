@@ -1,11 +1,13 @@
 const webpack = require('webpack'),
     path = require('path'),
-    I18nPlugin = require("i18n-webpack-plugin"),
     languages = ["en", "it"];
 
 module.exports = languages.map(function (lang) {
     return {
-        entry: './src/js/app.js',
+        entry: {
+            app: './src/js/app.js',
+            vendor: ['jquery']
+        },
         output: {
             path: './bin',
             filename: lang + '.app.min.js',
@@ -16,33 +18,56 @@ module.exports = languages.map(function (lang) {
                 css: 'src/css',
                 module_simple: 'submodules/module_simple/src',
                 module_handlebars: 'submodules/module_handlebars/src',
-                module_handlebars_i18n: 'submodules/module_handlebars_i18n/src',
                 'module_i18n/nls': 'submodules/module_i18n/src/nls/' + lang + "/",
                 module_i18n: 'submodules/module_i18n/src',
+                module_json: 'submodules/module_json/src',
             }
         },
         module: {
+            //jshint
+            preLoaders: [
+                {
+                    test: /\.js$/, // include .js files
+                    exclude: /node_modules/, // exclude any and all files in the node_modules folder
+                    loader: "jshint-loader"
+                }
+            ],
             loaders: [
                 {test: /\.css$/, loader: "style!css"},
-                {test: /\.hbs$/, loader: "handlebars-loader"}
+                {test: /\.hbs$/, loader: "handlebars-loader"},
+                {test: /\.json$/, loader: "json-loader"},
             ]
         },
 
         plugins: [
-            new I18nPlugin(languages[lang]),
-            /*        new webpack.optimize.UglifyJsPlugin({
-             compress: {
-             warnings: false,
-             },
-             output: {
-             comments: false,
-             },
-             }),*/
+            new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.min.js", Infinity),
+            /*new webpack.optimize.UglifyJsPlugin({
+                compress: {
+                    warnings: false,
+                },
+                output: {
+                    comments: false,
+                },
+            }),*/
         ],
 
-        //Needed by Handlebars
-        node: {
-            fs: "empty"
+        // more options in the optional jshint object
+        jshint: {
+            // any jshint option http://www.jshint.com/docs/options/
+            // i. e.
+            camelcase: true,
+
+            // jshint errors are displayed by default as warnings
+            // set emitErrors to true to display them as errors
+            emitErrors: false,
+
+            // jshint to not interrupt the compilation
+            // if you want any file with jshint errors to fail
+            // set failOnHint to true
+            failOnHint: false,
+
+            // custom reporter function
+            reporter: function(errors) { }
         }
     };
 });
