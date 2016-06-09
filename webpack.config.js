@@ -6,7 +6,7 @@ module.exports = languages.map(function (lang) {
     return {
         entry: {
             app: './src/js/app.js',
-            vendor: ['jquery']
+            vendor: ['jquery'] //add every vendor
         },
         output: {
             path: './bin',
