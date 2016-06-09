@@ -4,7 +4,7 @@ define(["jquery"], function ($) {
     }
 
     Utils.prototype.sayHello = function () {
-        var $greetings = $("<div class='model_2'>Hello Module 2!</div>");
+        var $greetings = $("<div class='module_simple'>Hello Module Simple!</div>");
         $('body').append($greetings);
     };
 
