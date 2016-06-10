@@ -28,6 +28,7 @@ module.exports = languages.map(function (lang) {
                 'module_i18n/nls': 'submodules/module_i18n/src/nls/' + lang + "/",
                 module_i18n: 'submodules/module_i18n/src',
                 module_json: 'submodules/module_json/src',
+                module_plugins: 'submodules/module_plugins/src',
             }
         },
         module: {
