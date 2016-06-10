@@ -1,10 +1,10 @@
-const
-    distFolderPath = "dist",
+const distFolderPath = "dist",
     webpack = require('webpack'),
     Path = require('path'),
     CleanWebpackPlugin = require('clean-webpack-plugin'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
-    languages = ["en", "it"];
+    packageJson = require("./package.json"),
+    languages = ["en"/*, "it"*/];
 
 module.exports = languages.map(function (lang) {
 
@@ -33,6 +33,7 @@ module.exports = languages.map(function (lang) {
         module: {
             //jshint
             preLoaders: [
+                //jshint
                 {
                     test: /\.js$/, // include .js files
                     exclude: /node_modules/, // exclude any and all files in the node_modules folder
@@ -64,12 +65,18 @@ module.exports = languages.map(function (lang) {
              comments: false,
              },
              }),*/
-            // create index.html
+            // compile index.html from template and inject hashed js
             new HtmlWebpackPlugin({
                 filename: "index.html",
                 inject: "body",
                 template: "./index.template.html"
-            })
+            }),
+            // define global scoped variable, force JSON.stringify()
+            new webpack.DefinePlugin({
+                ENVIRONMENT: JSON.stringify("develop"),
+                VERSION: JSON.stringify(packageJson.version),
+                LANG : JSON.stringify(lang)
+            }),
         ],
 
         // more options in the optional jshint object

@@ -16,4 +16,8 @@ define([
         $('<li></li>').text(cats[i]).appendTo(ul);
     }
 
+    $('<p>Environment: ' + ENVIRONMENT + '</p>').appendTo('body');
+    $('<p>Version: ' + VERSION + '</p>').appendTo('body');
+    $('<p>Language: ' + LANG+ '</p>').appendTo('body');
+
 });
