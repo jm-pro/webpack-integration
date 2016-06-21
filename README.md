@@ -21,3 +21,17 @@ This will generate the `dist` folder
 + create the `src/nls`
 + create a folder for each language and place there the translated files
 + edit the `webpack.config.js` to create dynamically the aliases
+
+# Dynamic plugin load
+
+**Current flow**
+
++ parse component configuration to create array of plugin paths
++ require the paths' array 
++ When require returns, load plugins' callback renders components synchronously
+
+**Refactor required**
+
++ create load script function with a static prefix (e.g. `require(["module_plugins/js/plugins/" + plugin], callback)`)
++ parse component configuration 
++ for each item configuration call the load script function and the callback 
