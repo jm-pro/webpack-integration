@@ -4,7 +4,7 @@ define(function () {
     }
 
     Custom.prototype.sayHello = function () {
-        alert("Hello from Custom DANIELE. [new HTTP request]");
+        alert("Hello from Custom plugin. [new HTTP request]");
     };
 
     return new Custom();

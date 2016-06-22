@@ -32,6 +32,17 @@ This will generate the `dist` folder
 
 **Refactor required**
 
-+ create load script function with a static prefix (e.g. `require(["module_plugins/js/plugins/" + plugin], callback)`)
-+ parse component configuration 
-+ for each item configuration call the load script function and the callback 
++ create a dummy `custom` folder for compiler
++ in the component, handle internally the core plugins and external plugins loading process with two different `require()` call:
++ + `require(["module_plugins/js/plugins/" + plugin ])` automatically resolved by the component alias
++ + `require(["module_plugins/js/custom/" + plugin ])` overridden in case of custom plugins
+
+**NB:** If custom plugins are used, define in `webpack.resolve.alias` the new custom plugin folder path before the alias of the component
+```javascript
+{
+...
+    'module_plugins/js/custom': 'src/js/plugins',
+    module_plugins: 'submodules/module_plugins/src',
+...
+}
+```

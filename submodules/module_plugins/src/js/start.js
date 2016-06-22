@@ -3,26 +3,31 @@ define([
     "module_plugins/js/utils"
 ], function ($, Utils) {
 
-    var pluginsPath = "module_plugins/js/plugins/";
-
-    var $pluginStaticallyRequiredButton = $("<button> Plugin statically required </button>");
-    $pluginStaticallyRequiredButton.on("click", function () {
+    var $staticallyRequiredButton = $("<button> Plugin statically required </button>");
+    $staticallyRequiredButton.on("click", function () {
         Utils.loadPluginStaticallyRequired();
     });
-    $('body').append($pluginStaticallyRequiredButton);
+    $('body').append($staticallyRequiredButton);
 
-    var $pluginDynamicallyRequiredInBundle = $("<button data-plugin='dynamicInBundle'> Plugin dynamic in bundle </button>");
-    $pluginDynamicallyRequiredInBundle.on("click", function (e) {
+    var $dynamicallyRequiredInBundle = $("<button data-plugin='dynamicInBundle'> Plugin dynamic in bundle </button>");
+    $dynamicallyRequiredInBundle.on("click", function (e) {
         var plugin = $(e.target).data("plugin");
-        Utils.loadInBundle(pluginsPath + plugin);
+        Utils.loadInBundle(plugin);
     });
-    $('body').append($pluginDynamicallyRequiredInBundle);
+    $('body').append($dynamicallyRequiredInBundle);
 
-    var $pluginDynamicallyRequiredNotInBundle = $("<button data-plugin='dynamicNotInBundle'> Plugin dynamic NOT in bundle </button>");
-    $pluginDynamicallyRequiredNotInBundle.on("click",  function (e) {
+    var $dynamicallyRequiredNotInBundle = $("<button data-plugin='dynamicNotInBundle'> Plugin dynamic NOT in bundle </button>");
+    $dynamicallyRequiredNotInBundle.on("click",  function (e) {
         var plugin = $(e.target).data("plugin");
         Utils.loadNotInBundle( plugin );
     });
-    $('body').append($pluginDynamicallyRequiredNotInBundle);
+    $('body').append($dynamicallyRequiredNotInBundle);
+
+    var $dynamicallyRequiredCustom = $("<button data-plugin='custom'> Custom Plugin</button>");
+    $dynamicallyRequiredCustom.on("click",  function (e) {
+        var plugin = $(e.target).data("plugin");
+        Utils.loadCustomPlugin( plugin );
+    });
+    $('body').append($dynamicallyRequiredCustom);
 
 });

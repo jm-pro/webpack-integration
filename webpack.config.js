@@ -25,7 +25,13 @@ var distFolderPath = "dist",
             filename: "index.html",
             inject: "body",
             template: "./index.template.html"
+        }),
+        new webpack.optimize.AggressiveMergingPlugin({
+            minSizeReduce : 1.5,
+            //moveToParents: true,
+            //entryChunkMultiplicator: 10
         })
+
     ];
 
 // plugins included only in production environment
@@ -44,9 +50,6 @@ if (production) {
     ]);
 
 }
-
-
-
 
 module.exports = languages.map(function (lang) {
 
@@ -72,7 +75,7 @@ module.exports = languages.map(function (lang) {
                 'module_i18n/nls': 'submodules/module_i18n/src/nls/' + lang + "/",
                 module_i18n: 'submodules/module_i18n/src',
                 module_json: 'submodules/module_json/src',
-                "module_plugins/js/plugins/custom": 'src/js/plugins/custom',
+                'module_plugins/js/custom': 'src/js/plugins',
                 module_plugins: 'submodules/module_plugins/src',
             }
         },
