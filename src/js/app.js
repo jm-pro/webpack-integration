@@ -6,7 +6,7 @@ define([
     require("css/style.css");
     require("module_simple/js/start");
     require("module_handlebars/js/start");
-    require("module_i18n/js/start");
+    require("module_nls/js/start");
     require("module_json/js/start");
     require("module_plugins/js/start");
 

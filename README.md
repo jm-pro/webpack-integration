@@ -22,6 +22,17 @@ This will generate the `dist` folder
 + create a folder for each language and place there the translated files
 + edit the `webpack.config.js` to create dynamically the aliases
 
+**NB:** If nls is used, define in `webpack.resolve.alias` the new entry before the alias of the component
+
+```javascript
+{
+...
+    'module_nls/nls': 'submodules/module_nls/src/nls/' + lang + "/",
+    module_nls: 'submodules/module_nls/src',
+...
+}
+```
+
 # Dynamic plugin load
 
 **Current flow**
@@ -32,8 +43,8 @@ This will generate the `dist` folder
 
 **Refactor required**
 
-1. create a dummy `custom` folder for compiler
-2. in the component, handle internally the core plugins and external plugins loading process with two different `require()` call:
++ create a dummy `custom` folder for compiler
++ in the component, handle internally the core plugins and external plugins loading process with two different `require()` call:
     * `require(["module_plugins/js/plugins/" + plugin ])` automatically resolved by the component alias
     * `require(["module_plugins/js/custom/" + plugin ])` overridden in case of custom plugins
 
