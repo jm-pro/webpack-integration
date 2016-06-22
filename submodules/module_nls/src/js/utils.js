@@ -1,6 +1,6 @@
 define([
     "jquery",
-    "module_i18n/nls/labels"
+    "module_nls/nls/labels"
 ], function ($, labels) {
 
     function Utils() {
@@ -8,7 +8,7 @@ define([
 
     Utils.prototype.sayHello = function () {
 
-        var template = require("module_i18n/html/template.hbs"),
+        var template = require("module_nls/html/template.hbs"),
             html = template(labels);
 
         $('body').append(html);

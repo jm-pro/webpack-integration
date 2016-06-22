@@ -1,8 +1,8 @@
 define([
-    "module_i18n/js/utils"
+    "module_nls/js/utils"
 ], function (Utils) {
 
-    require("module_i18n/css/style.css");
+    require("module_nls/css/style.css");
 
     Utils.sayHello();
 
