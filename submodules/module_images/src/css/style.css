@@ -1,0 +1,13 @@
+.module_images .foro{
+    background: url('./img/foro.jpg');
+    height: 100px;
+    width : 50%;
+    background-size: cover;
+}
+
+.module_images .colosseo{
+    background: url('./img/colosseo.jpg') no-repeat;
+    height: 100px;
+    width : 50%;
+    background-size: cover;
+}

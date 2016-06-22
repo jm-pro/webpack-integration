@@ -3,7 +3,9 @@ var distFolderPath = "dist",
     Path = require('path'),
     CleanWebpackPlugin = require('clean-webpack-plugin'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
+    ExtractTextPlugin = require("extract-text-webpack-plugin"),
     packageJson = require("./package.json"),
+    ImageminPlugin = require('imagemin-webpack-plugin'),
     languages = ["en"/*, "it"*/],
     production = false,
     plugins = [
@@ -15,10 +17,10 @@ var distFolderPath = "dist",
         }),
         // vendor in a separate bundle, hash for long term cache
         new webpack.optimize.CommonsChunkPlugin({
-            name : "vendor",
-            filename : "vendor.[hash].js",
-            minChunks : 2,
-            children : true
+            name: "vendor",
+            filename: "vendor.[hash].js",
+            minChunks: 2,
+            children: true
         }),
         // compile index.html from template and inject hashed js
         new HtmlWebpackPlugin({
@@ -27,9 +29,35 @@ var distFolderPath = "dist",
             template: "./index.template.html"
         }),
         new webpack.optimize.AggressiveMergingPlugin({
-            minSizeReduce : 1.5,
+            minSizeReduce: 1.5,
             //moveToParents: true,
             //entryChunkMultiplicator: 10
+        }),
+        // create native css output file
+        new ExtractTextPlugin("style.[hash].css", {
+            allChunks: true
+        }),
+        // Make sure that the plugin is after any plugins that add images
+        // These are the default options:
+       /* new ImageminPlugin({
+            disable: false,
+            optipng: {
+                optimizationLevel: 3
+            },
+            gifsicle: {
+                optimizationLevel: 1
+            },
+            jpegtran: {
+                progressive: false
+            },
+            svgo: {
+            },
+            pngquant: null, // pngquant is not run unless you pass options here
+            plugins: []
+        }),*/
+        //Merge small chunks that are lower than this min size (in chars)
+        new webpack.optimize.MinChunkSizePlugin({
+            minChunkSize: 51200, // ~50kb
         })
 
     ];
@@ -54,8 +82,8 @@ if (production) {
 module.exports = languages.map(function (lang) {
 
     return {
-        debug : !production, //switch loader to debug mode
-        devtool : production ? false : 'eval', //source map generation
+        debug: !production, //switch loader to debug mode
+        devtool: production ? false : 'eval', //source map generation
         entry: {
             app: './src/js/app.js',
             vendor: ['jquery'] //add every vendor
@@ -77,6 +105,7 @@ module.exports = languages.map(function (lang) {
                 module_json: 'submodules/module_json/src',
                 'module_plugins/js/custom': 'src/js/plugins',
                 module_plugins: 'submodules/module_plugins/src',
+                module_images: 'submodules/module_images/src',
             }
         },
         module: {
@@ -90,10 +119,11 @@ module.exports = languages.map(function (lang) {
                 }
             ],
             loaders: [
-                {test: /\.css$/, loader: "style!css"},
+                {test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")},
                 {test: /\.hbs$/, loader: "handlebars-loader"},
                 {test: /\.json$/, loader: "json-loader"},
-            ]
+                {test: /\.(jpg|png)$/, loader: 'url?limit=30000&name=img/[name].[hash].[ext]'}, //inline images with size less than 30kb
+            ],
         },
 
         plugins: plugins.concat([

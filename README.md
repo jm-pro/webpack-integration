@@ -58,3 +58,10 @@ This will generate the `dist` folder
 ...
 }
 ```
+
+# Images
+
+Given that currently the template are loaded by the handlebarjs loader, it is not possible to optimize the tag images.
+**Do not use** the img tag but apply images with css. 
+
+Try `submodule/module_images/src/html/template.hbs` the `trevi.jpg` 
