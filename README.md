@@ -34,8 +34,8 @@ This will generate the `dist` folder
 
 1. create a dummy `custom` folder for compiler
 2. in the component, handle internally the core plugins and external plugins loading process with two different `require()` call:
-..* `require(["module_plugins/js/plugins/" + plugin ])` automatically resolved by the component alias
-..* `require(["module_plugins/js/custom/" + plugin ])` overridden in case of custom plugins
+    * `require(["module_plugins/js/plugins/" + plugin ])` automatically resolved by the component alias
+    * `require(["module_plugins/js/custom/" + plugin ])` overridden in case of custom plugins
 
 **NB:** If custom plugins are used, define in `webpack.resolve.alias` the new custom plugin folder path before the alias of the component
 
