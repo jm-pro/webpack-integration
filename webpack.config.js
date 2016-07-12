@@ -6,6 +6,7 @@ var distFolderPath = "dist",
     ExtractTextPlugin = require("extract-text-webpack-plugin"),
     packageJson = require("./package.json"),
     ImageminPlugin = require('imagemin-webpack-plugin'),
+    //AppCachePlugin = require('appcache-webpack-plugin'),
     languages = ["en"/*, "it"*/],
     production = false,
     plugins = [
@@ -21,12 +22,6 @@ var distFolderPath = "dist",
             filename: "vendor.[hash].js",
             minChunks: 2,
             children: true
-        }),
-        // compile index.html from template and inject hashed js
-        new HtmlWebpackPlugin({
-            filename: "index.html",
-            inject: "body",
-            template: "./index.template.html"
         }),
         new webpack.optimize.AggressiveMergingPlugin({
             minSizeReduce: 1.5,
@@ -58,8 +53,13 @@ var distFolderPath = "dist",
         //Merge small chunks that are lower than this min size (in chars)
         new webpack.optimize.MinChunkSizePlugin({
             minChunkSize: 51200, // ~50kb
-        })
-
+        }),
+        // compile index.html from template and inject hashed js
+        new HtmlWebpackPlugin({
+            filename: "index.html",
+            inject: "body",
+            template: "./index.template.html"
+        }),
     ];
 
 // plugins included only in production environment
@@ -75,6 +75,14 @@ if (production) {
                 comments: false,
             },
         }),
+       /* new AppCachePlugin({
+            //cache: ['someOtherAsset.jpg'],
+            network: null,  // No network access allowed!
+            //fallback: ['failwhale.jpg'],
+            //settings: ['prefer-online'],
+            //exclude: ['file.txt', /.*\.js$/],  // Exclude file.txt and all .js files
+            output: 'manifest.appcache'
+        })*/
     ]);
 
 }
