@@ -65,3 +65,7 @@ Given that currently the template are loaded by the handlebarjs loader, it is no
 **Do not use** the img tag but apply images with css. 
 
 Try `submodule/module_images/src/html/template.hbs` the `trevi.jpg` 
+
+# Test
+
+Run test with `npm test`
