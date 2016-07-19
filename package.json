@@ -4,7 +4,7 @@
   "description": "Testing repo for webpack integration in FENIX",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/index.js -w"
+    "test": "NODE_ENV=test COVERAGE=true karma start ./karma.config.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,13 @@
     "jshint": "2.9.2",
     "jshint-loader": "0.8.3",
     "json-loader": "0.5.4",
+    "karma": "1.1.1",
+    "karma-chai": "0.1.0",
+    "karma-chrome-launcher": "1.0.1",
+    "karma-coverage": "1.1.0",
+    "karma-firefox-launcher": "1.0.0",
+    "karma-mocha": "1.1.1",
+    "karma-webpack": "1.7.0",
     "mocha": "2.5.3",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
