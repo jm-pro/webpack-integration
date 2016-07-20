@@ -2,9 +2,9 @@
   "name": "webpack-integration",
   "version": "1.0.0",
   "description": "Testing repo for webpack integration in FENIX",
-  "main": "index.js",
+  "main": "src/js/index.js",
   "scripts": {
-    "test": "NODE_ENV=test COVERAGE=true karma start ./karma.config.js"
+    "test": "NODE_ENV=test webpack & COVERAGE=true karma start ./karma.config.js"
   },
   "repository": {
     "type": "git",

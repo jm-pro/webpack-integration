@@ -24,6 +24,7 @@ define([
         $('<p>Is dev: ' + !!__DEVELOPMENT__ + '</p>').appendTo('body');
         $('<p>Version: ' + VERSION + '</p>').appendTo('body');
         $('<p>Language: ' + LANG+ '</p>').appendTo('body');
+
     }
 
     App.prototype.getCats = function () {

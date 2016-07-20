@@ -9,10 +9,9 @@ if (coverage) {
 }
 
 var webpackConfig = require('./webpack.config')[0];
-//var entry = path.join(webpackConfig.context, webpackConfig.entry.app);
-var entry = path.join(webpackConfig.entry.app);
 var preprocessors = {};
-preprocessors[entry] = ['webpack'];
+preprocessors['test/*'] = ['webpack'];
+preprocessors['src/*'] = ['webpack'];
 
 module.exports = function (config) {
     config.set({
@@ -23,7 +22,10 @@ module.exports = function (config) {
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatchBatchDelay: 300,
-        files: [entry],
+        files: [
+            "./dist/**/*.js",
+            "./test/**/*.js"
+        ],
         exclude: [],
         preprocessors: preprocessors,
         webpack: webpackConfig,
@@ -51,6 +53,7 @@ module.exports = function (config) {
         ]
     });
 };
+
 
 function getReporters() {
     var reps = ['progress'];

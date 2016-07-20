@@ -1,14 +1,16 @@
+NODE_ENV = process.env.NODE_ENV;
+
 var distFolderPath = "dist",
     webpack = require('webpack'),
+    packageJson = require("./package.json"),
     Path = require('path'),
+    //plugins
     CleanWebpackPlugin = require('clean-webpack-plugin'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     ExtractTextPlugin = require("extract-text-webpack-plugin"),
-    packageJson = require("./package.json"),
-    ImageminPlugin = require('imagemin-webpack-plugin'),
-    //AppCachePlugin = require('appcache-webpack-plugin'),
+    //configuration
     languages = ["en"/*, "it"*/],
-    production = false,
+    production = NODE_ENV === "test" ? false : true,
     plugins = [
         //clean dist folder before build
         new CleanWebpackPlugin(['dist'], {
@@ -16,43 +18,9 @@ var distFolderPath = "dist",
             //verbose: true,
             //dry: false
         }),
-        // vendor in a separate bundle, hash for long term cache
-        new webpack.optimize.CommonsChunkPlugin({
-            name: "vendor",
-            filename: "vendor.[hash].js",
-            minChunks: 2,
-            children: true
-        }),
-        new webpack.optimize.AggressiveMergingPlugin({
-            minSizeReduce: 1.5,
-            //moveToParents: true,
-            //entryChunkMultiplicator: 10
-        }),
         // create native css output file
         new ExtractTextPlugin("style.[hash].css", {
             allChunks: true
-        }),
-        // Make sure that the plugin is after any plugins that add images
-        // These are the default options:
-       /* new ImageminPlugin({
-            disable: false,
-            optipng: {
-                optimizationLevel: 3
-            },
-            gifsicle: {
-                optimizationLevel: 1
-            },
-            jpegtran: {
-                progressive: false
-            },
-            svgo: {
-            },
-            pngquant: null, // pngquant is not run unless you pass options here
-            plugins: []
-        }),*/
-        //Merge small chunks that are lower than this min size (in chars)
-        new webpack.optimize.MinChunkSizePlugin({
-            minChunkSize: 51200, // ~50kb
         }),
         // compile index.html from template and inject hashed js
         new HtmlWebpackPlugin({
@@ -60,12 +28,28 @@ var distFolderPath = "dist",
             inject: "body",
             template: "./index.template.html"
         }),
-    ];
+    ],
+    entry = {};
 
 // plugins included only in production environment
 if (production) {
 
     plugins = plugins.concat([
+        // vendor in a separate bundle, hash for long term cache
+        new webpack.optimize.CommonsChunkPlugin({
+            name: "vendor",
+            filename: "vendor.[hash].js",
+            chucks: ["vendor"]
+        }),
+        //Merge small chunks that are lower than this min size (in chars)
+        new webpack.optimize.MinChunkSizePlugin({
+            minChunkSize: 51200, // ~50kb
+        }),
+        /*new webpack.optimize.AggressiveMergingPlugin({
+         minSizeReduce: 1.5,
+         //moveToParents: true,
+         //entryChunkMultiplicator: 10
+         }),*/
         // uglify
         new webpack.optimize.UglifyJsPlugin({
             compress: {
@@ -75,36 +59,31 @@ if (production) {
                 comments: false,
             },
         }),
-       /* new AppCachePlugin({
-            //cache: ['someOtherAsset.jpg'],
-            network: null,  // No network access allowed!
-            //fallback: ['failwhale.jpg'],
-            //settings: ['prefer-online'],
-            //exclude: ['file.txt', /.*\.js$/],  // Exclude file.txt and all .js files
-            output: 'manifest.appcache'
-        })*/
     ]);
 
+    // add entry for vendor bundle
+    entry["vendor"] = ['jquery']; //add every vendor here
+
 }
+
+entry["app"] = ['./src/js/app.js'];
 
 module.exports = languages.map(function (lang) {
 
     return {
         debug: !production, //switch loader to debug mode
         devtool: production ? false : 'eval', //source map generation
-        entry: {
-            app: './src/js/app.js',
-            vendor: ['jquery'] //add every vendor
-        },
+        entry: entry,
         output: {
             path: Path.join(__dirname, distFolderPath, lang),
             //hash for long term cache
-            filename: 'bundle.[hash].js',
+            filename: production ? 'bundle.[hash].js' : "bundle.js",
             chunkFilename: 'chunk-[id].[hash].js'
         },
         resolve: {
             root: Path.resolve(__dirname),
             alias: {
+                module : "bundle.[hash].js",
                 css: 'src/css',
                 module_simple: 'submodules/module_simple/src',
                 module_handlebars: 'submodules/module_handlebars/src',
