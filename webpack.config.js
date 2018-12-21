@@ -1,145 +1,124 @@
-NODE_ENV = process.env.NODE_ENV;
 
-var distFolderPath = "dist",
-    webpack = require('webpack'),
-    packageJson = require("./package.json"),
-    Path = require('path'),
-    //plugins
-    CleanWebpackPlugin = require('clean-webpack-plugin'),
-    HtmlWebpackPlugin = require('html-webpack-plugin'),
-    ExtractTextPlugin = require("extract-text-webpack-plugin"),
-    //configuration
-    languages = ["en"/*, "it"*/],
-    production = NODE_ENV === "test" ? false : true,
-    plugins = [
-        //clean dist folder before build
-        new CleanWebpackPlugin(['dist'], {
-            //root: '/full/project/path',
-            //verbose: true,
-            //dry: false
-        }),
-        // create native css output file
-        new ExtractTextPlugin("style.[hash].css", {
-            allChunks: true
-        }),
-        // compile index.html from template and inject hashed js
-        new HtmlWebpackPlugin({
-            filename: "index.html",
-            inject: "body",
-            template: "./index.template.html"
-        }),
+const webpack = require('webpack')
+const path = require('path')
+const packageJson = require("./package.json")
+const distFolderPath = "dist"
+
+//plugins
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
+//configuration
+const languages = ["en"/*, "it"*/]
+const devMode = process.env.NODE_ENV !== 'production'
+
+
+module.exports = {
+  entry: './src/js/app.js',
+  output: {
+    path: path.resolve(__dirname, distFolderPath),
+    filename: '[name].[contenthash].js'
+  },
+  module: {
+    rules: [  { test: /\.(sa|sc|c)ss$/,
+        //  MiniCssExtractPlugin.loader should be used only on production builds without style-loader in the loaders chain,
+        use: [
+          devMode ? 'style-loader' : MiniCssExtractPlugin.loader , // use style-loader except in prod, use MiniCssExtractPlugin.loader
+            "css-loader", // translates CSS into CommonJS
+            //"sass-loader" // compiles Sass to CSS, using Node Sass by default
+        ]
+      },
+      { test: /\.png$/,
+        use: [ { loader: 'url-loader',
+                 options: { mimetype: 'image/png'}
+               }
+             ] 
+      },
+      { test: /\.hbs$/, use: 'handlebars-loader' },
+      // webpack 4 understands json natively
+      
+      { test: /underscore/, 
+        use:  'exports?_' },
+      { test: /backbone/, 
+        use: 'exports?Backbone!imports?underscore,jquery' },
+      { test: /\.(png|jpg|gif)$/i,  //inline images with size less than 30kb
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 30000
+            }
+          }
+        ]
+      }
+    ]
+    
+  },
+  
+  plugins: [
+   new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: devMode ? '[name].css' : '[name].[hash].css',
+      chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
+    }),
+    
+     new webpack.LoaderOptionsPlugin({
+            options: {
+                handlebarsLoader: {}
+            }
+        })
+    
+  ],
+  optimization: {
+    runtimeChunk: 'single',
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\\/]node_modules[\\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
+      }
+    }
+  },
+  resolve: {
+    // RESOLVE configures how to resolve module requests
+    // (does not apply to resolving to loaders)
+    
+    // directories where to look for modules
+    modules: [
+      "node_modules",
+      path.resolve(__dirname, "src")
     ],
-    entry = {};
-
-// plugins included only in production environment
-if (production) {
-
-    plugins = plugins.concat([
-        // vendor in a separate bundle, hash for long term cache
-        new webpack.optimize.CommonsChunkPlugin({
-            name: "vendor",
-            filename: "vendor.[hash].js",
-            chucks: ["vendor"]
-        }),
-        //Merge small chunks that are lower than this min size (in chars)
-        new webpack.optimize.MinChunkSizePlugin({
-            minChunkSize: 51200, // ~50kb
-        }),
-        /*new webpack.optimize.AggressiveMergingPlugin({
-         minSizeReduce: 1.5,
-         //moveToParents: true,
-         //entryChunkMultiplicator: 10
-         }),*/
-        // uglify
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false,
-            },
-            output: {
-                comments: false,
-            },
-        }),
-    ]);
-
-    // add entry for vendor bundle
-    entry["vendor"] = ['jquery']; //add every vendor here
-
+    
+    // extensions that are used
+    extensions: [".js", ".json", ".jsx", ".css"],
+    
+    // a list of module name aliases
+    alias: {
+      //"module": "new-module",
+      // alias "module" -> "new-module" and "module/path/file" -> "new-module/path/file"
+      
+      //"only-module$": "new-module",
+      // alias "only-module" -> "new-module", but not "only-module/path/file" -> "new-module/path/file"
+      
+      //"module": path.resolve(__dirname, "app/third/module.js"),
+      // alias "module" -> "./app/third/module.js" 
+      // and "module/file" results in error
+      // modules aliases are imported relative to the current context
+      module : "bundle.[hash].js",
+      //css: 'src/css',
+      module_simple: 'js/submodules/module_simple/src',
+      module_handlebars: 'js/submodules/module_handlebars/src',
+      module_nls: 'js/submodules/module_nls/src',
+      module_json: 'js/submodules/module_json/src',
+      module_plugins: 'js/submodules/module_plugins/src',
+      module_images: 'js/submodules/module_images/src',
+		}	        
+	}
+  
 }
 
-entry["app"] = ['./src/js/app.js'];
 
-module.exports = languages.map(function (lang) {
-
-    return {
-        debug: !production, //switch loader to debug mode
-        devtool: production ? false : 'eval', //source map generation
-        entry: entry,
-        output: {
-            path: Path.join(__dirname, distFolderPath, lang),
-            //hash for long term cache
-            filename: production ? 'bundle.[hash].js' : "bundle.js",
-            chunkFilename: 'chunk-[id].[hash].js'
-        },
-        resolve: {
-            root: Path.resolve(__dirname),
-            alias: {
-                module : "bundle.[hash].js",
-                css: 'src/css',
-                module_simple: 'submodules/module_simple/src',
-                module_handlebars: 'submodules/module_handlebars/src',
-                'module_nls/nls': 'submodules/module_nls/src/nls/' + lang + "/",
-                module_nls: 'submodules/module_nls/src',
-                module_json: 'submodules/module_json/src',
-                'module_plugins/js/custom': 'src/js/plugins',
-                module_plugins: 'submodules/module_plugins/src',
-                module_images: 'submodules/module_images/src',
-            }
-        },
-        module: {
-            //jshint
-            preLoaders: [
-                //jshint
-                {
-                    test: /\.js$/, // include .js files
-                    exclude: /node_modules/, // exclude any and all files in the node_modules folder
-                    loader: "jshint-loader"
-                }
-            ],
-            loaders: [
-                {test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")},
-                {test: /\.hbs$/, loader: "handlebars-loader"},
-                {test: /\.json$/, loader: "json-loader"},
-                {test: /\.(jpg|png)$/, loader: 'url?limit=30000&name=img/[name].[hash].[ext]'}, //inline images with size less than 30kb
-            ],
-        },
-
-        plugins: plugins.concat([
-            // define global scoped variable, force JSON.stringify()
-            new webpack.DefinePlugin({
-                __DEVELOPMENT__: !production,
-                VERSION: JSON.stringify(packageJson.version),
-                LANG: JSON.stringify(lang)
-            }),
-        ]),
-
-        // more options in the optional jshint object
-        jshint: {
-            // any jshint option http://www.jshint.com/docs/options/
-            // i. e.
-            camelcase: true,
-
-            // jshint errors are displayed by default as warnings
-            // set emitErrors to true to display them as errors
-            emitErrors: false,
-
-            // jshint to not interrupt the compilation
-            // if you want any file with jshint errors to fail
-            // set failOnHint to true
-            failOnHint: false,
-
-            // custom reporter function
-            reporter: function (errors) {
-            }
-        }
-    };
-});
