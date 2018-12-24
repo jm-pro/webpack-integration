@@ -64,6 +64,11 @@ module.exports = {
       chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
     }),
     
+    new HtmlWebpackPlugin({
+      template: "./index.template.html",
+      filename: "index.html"
+    }),
+    
      new webpack.LoaderOptionsPlugin({
             options: {
                 handlebarsLoader: {}
