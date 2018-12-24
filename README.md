@@ -5,6 +5,11 @@
 
 This will generate the `dist` folder
 
+
+This branch uses Webpack 4. Currently NOT working are NLS and test.
+
+Also moved the submodules into src/js folder.
+
 # `webpack.config.js`
 
 + Add to `resolve.alias` the alias of the nls folder of each submodules (before the submodule alias declaration)
@@ -16,8 +21,7 @@ This will generate the `dist` folder
 + split grouped templates to single template: when it is used only one template for a module and it is selected a portion of it, split the single file into multiple file
 + require() the handlebar file without the text! prefix: return HandlebarsJS template fn ready to be used with a model
 
-# nls (i18n)
-
+# nls (i18n) - (not working in this branch)
 + create the `src/nls`
 + create a folder for each language and place there the translated files
 + edit the `webpack.config.js` to create dynamically the aliases
@@ -66,6 +70,5 @@ Given that currently the template are loaded by the handlebarjs loader, it is no
 
 Try `submodule/module_images/src/html/template.hbs` the `trevi.jpg` 
 
-# Test
-
+# Test - (not working in this branch)
 Run test with `npm test`
